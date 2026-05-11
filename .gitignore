@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Generated review and Codex handoff reports
+reports/
+
+# Project documentation that should remain visible even if user-level ignore files hide it.
+!CHANGELOG.md
+!.codex/
+!.codex/**
+!Docs/adr/README.md
