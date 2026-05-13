@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Lobsters job stories</title>
+    <item>
+      <title>Freelance Python automation role</title>
+      <description>Remote workflow automation project with budget.</description>
+      <link>https://lobste.rs/s/example</link>
+      <guid>lobsters-job-1</guid>
+      <author>lobster_user</author>
+      <pubDate>Wed, 13 May 2026 17:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

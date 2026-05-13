@@ -2,6 +2,8 @@ import argparse
 import json
 from pathlib import Path
 
+from .adapters.hacker_news import HackerNewsAdapter
+from .adapters.lobsters import LobstersRssAdapter, lobsters_source
 from .adapters.rss import RssFeedAdapter
 from .collector import DryRunCollector, RedditCollector
 from .pipeline import RadarPipeline
@@ -61,13 +63,27 @@ def run_source_collection(
 ) -> dict:
     collected_items = []
     sources = registry.enabled_sources()
-    for source in sources:
-        adapter = adapters[source.acquisition_method]
-        source_items = adapter.collect(source)
-        collected_items.extend(item.to_pipeline_item() for item in source_items)
-
+    failed = 0
+    skipped = 0
     store = OpportunityStore(database_path)
     store.init_schema()
+
+    for source in sources:
+        if store.source_is_backed_off(source.source_id):
+            skipped += 1
+            continue
+
+        adapter = adapters[source.acquisition_method]
+        try:
+            source_items = adapter.collect(source)
+        except RuntimeError as error:
+            failed += 1
+            store.record_source_failure(source.source_id, str(error))
+            continue
+
+        store.record_source_success(source.source_id)
+        collected_items.extend(item.to_pipeline_item() for item in source_items)
+
     pipeline = RadarPipeline(store)
     saved_ids = pipeline.process_items(collected_items)
 
@@ -76,6 +92,42 @@ def run_source_collection(
         "collected": len(collected_items),
         "saved": len(saved_ids),
         "open": len(store.list_open_assessments(limit=1000)),
+        "failed": failed,
+        "skipped": skipped,
+    }
+
+
+def run_reddit_shadow_collection(
+    rss_adapter: object,
+    api_adapter: object,
+    database_path: str | Path,
+) -> dict:
+    rss_source = SourceDefinition(
+        source_id="reddit-shadow-rss",
+        display_name="Reddit RSS shadow",
+        platform="reddit",
+        acquisition_method="rss_feed",
+        endpoint_or_query="https://www.reddit.com/r/forhire/.rss",
+    )
+    api_source = SourceDefinition(
+        source_id="reddit-shadow-api",
+        display_name="Reddit API shadow",
+        platform="reddit",
+        acquisition_method="reddit_api_praw",
+        endpoint_or_query="forhire",
+    )
+    rss_items = [item.to_pipeline_item() for item in rss_adapter.collect(rss_source)]
+    api_items = [item.to_pipeline_item() for item in api_adapter.collect(api_source)]
+    rss_ids = {item["id"] for item in rss_items}
+    api_ids = {item["id"] for item in api_items}
+
+    return {
+        "rss_collected": len(rss_items),
+        "api_collected": len(api_items),
+        "overlap": len(rss_ids & api_ids),
+        "rss_only": len(rss_ids - api_ids),
+        "api_only": len(api_ids - rss_ids),
+        "persisted": 0,
     }
 
 
@@ -97,6 +149,35 @@ def rss_source_from_arg(value: str, limit: int) -> SourceDefinition:
         endpoint_or_query=url,
         item_limit=limit,
     )
+
+
+def hn_source_from_arg(value: str, limit: int) -> SourceDefinition:
+    source_id, endpoint = _source_pair(value, "HN sources")
+    return SourceDefinition(
+        source_id=source_id,
+        display_name=source_id,
+        platform="hacker_news",
+        acquisition_method="hacker_news_api",
+        endpoint_or_query=endpoint,
+        item_limit=limit,
+    )
+
+
+def lobsters_source_from_arg(value: str, limit: int) -> SourceDefinition:
+    source_id, tag_query = _source_pair(value, "Lobsters sources")
+    return lobsters_source(source_id=source_id, tag_query=tag_query, limit=limit)
+
+
+def _source_pair(value: str, label: str) -> tuple[str, str]:
+    if "=" not in value:
+        raise ValueError(f"{label} must use SOURCE_ID=QUERY format.")
+
+    source_id, query = value.split("=", 1)
+    source_id = source_id.strip()
+    query = query.strip()
+    if not source_id or not query:
+        raise ValueError(f"{label} must include both SOURCE_ID and QUERY.")
+    return source_id, query
 
 
 def main() -> None:
@@ -124,27 +205,53 @@ def main() -> None:
         default=[],
         help="RSS source in SOURCE_ID=URL format. Repeat for multiple feeds.",
     )
+    parser.add_argument(
+        "--hn-source",
+        action="append",
+        default=[],
+        help="Hacker News source in SOURCE_ID=ENDPOINT format, such as hn-jobs=jobstories.",
+    )
+    parser.add_argument(
+        "--lobsters-source",
+        action="append",
+        default=[],
+        help="Lobsters source in SOURCE_ID=TAGS format, such as lobsters-jobs=job,python.",
+    )
     args = parser.parse_args()
 
-    if args.rss_source:
+    if args.rss_source or args.hn_source or args.lobsters_source:
         try:
             sources = [
                 rss_source_from_arg(value, limit=args.limit or 10)
                 for value in args.rss_source
             ]
+            sources.extend(
+                hn_source_from_arg(value, limit=args.limit or 10)
+                for value in args.hn_source
+            )
+            sources.extend(
+                lobsters_source_from_arg(value, limit=args.limit or 10)
+                for value in args.lobsters_source
+            )
             result = run_source_collection(
                 registry=SourceRegistry(sources),
-                adapters={"rss_feed": RssFeedAdapter()},
+                adapters={
+                    "rss_feed": RssFeedAdapter(),
+                    "hacker_news_api": HackerNewsAdapter(),
+                    "lobsters_rss": LobstersRssAdapter(),
+                },
                 database_path=args.database,
             )
         except (RuntimeError, ValueError) as error:
-            raise SystemExit(f"RSS collection stopped: {error}") from None
+            raise SystemExit(f"Source collection stopped: {error}") from None
         print(
-            "RSS collection complete: "
+            "Source collection complete: "
             f"{result['sources']} sources, "
             f"{result['collected']} collected, "
             f"{result['saved']} assessed, "
-            f"{result['open']} open for review."
+            f"{result['open']} open for review, "
+            f"{result['failed']} failed, "
+            f"{result['skipped']} skipped."
         )
     elif args.live_subreddit:
         try:

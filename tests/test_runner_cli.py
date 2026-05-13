@@ -47,7 +47,7 @@ class RunnerCliTests(unittest.TestCase):
         argv = ["runner", "--rss-source", "missing-url"]
 
         with patch.object(sys, "argv", argv):
-            with self.assertRaisesRegex(SystemExit, "RSS collection stopped"):
+            with self.assertRaisesRegex(SystemExit, "Source collection stopped"):
                 runner.main()
 
     def test_main_prints_rss_collection_summary(self) -> None:
@@ -74,7 +74,7 @@ class RunnerCliTests(unittest.TestCase):
             ):
                 runner.main()
 
-        self.assertIn("RSS collection complete: 1 sources", output.getvalue())
+        self.assertIn("Source collection complete: 1 sources", output.getvalue())
 
 
 if __name__ == "__main__":

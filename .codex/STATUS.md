@@ -10,8 +10,8 @@ Last updated: 2026-05-13
 - Existing docs cover architecture notes, adaptive learning, and ChatGPT/Codex review workflow.
 - Collector has a dry-run fixture mode and a PRAW-backed live Reddit adapter boundary.
 - ADR 0007 is accepted: Reddit is one source family behind a source-agnostic acquisition layer.
-- The first source registry, canonical source item model, generic RSS adapter, and RSS command path
-  are implemented.
+- Source-agnostic acquisition is implemented for generic RSS, Hacker News, and Lobsters.
+- Source health/backoff and the Reddit RSS/API shadow-run comparison path are implemented.
 - The assessment pipeline can process collected items and persist reviewable records.
 - The briefing generator reads stored assessments.
 - The dashboard has data-backed queue sections and decision controls.
@@ -40,12 +40,11 @@ Last updated: 2026-05-13
 
 ## Known Gaps
 
-- The pipeline still stores assessed items through the existing compatibility table; deeper storage
-  renaming from Reddit item to source item is pending.
+- The pipeline still stores assessed items through the existing compatibility table. That naming can
+  be cleaned up later, but it no longer blocks source-agnostic acquisition.
 - Live Reddit collection has not been exercised against the real API yet because
   `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are not configured.
 - Visual Streamlit dashboard verification is still pending.
-- Hacker News and Lobsters adapters are still pending.
 - Tests validate regression examples, dry-run and RSS pipeline paths, storage, dashboard sections,
   briefing generation, learning reports, and the quality gate.
 - Product workflow details still need tuning as implementation proceeds.
@@ -62,18 +61,18 @@ Story points are relative size estimates. Time estimates are rough working-time 
 | Phase 3 | Persistence and human decisions | 13 SP | 100% | Done |
 | Phase 4 | Briefing and dashboard MVP | 13 SP | 100% | Done |
 | Phase 5 | Learning loop and source quality | 13 SP | 100% | Done |
-| Phase 6 | Source-agnostic acquisition and operational hardening | 34 SP | 68% | 0.75-1.5 days plus Reddit API credentials |
+| Phase 6 | Source-agnostic acquisition and operational hardening | 34 SP | 100% | Credential-only Reddit API verification remains |
 
 Total MVP estimate: 112 SP.
 
-Current completed credit: 101 SP, counting Phases 0-5 plus completed Phase 6 dry-run work,
-bounded live-run command, source registry, generic RSS adapter, and the operational quality gate.
+Current completed credit: 112 SP, counting Phases 0-6. Live Reddit API verification remains queued
+because credentials are not configured.
 
-Overall MVP progress: about 90%.
+Overall MVP progress: about 100% for the local MVP scope.
 
 ```text
 MVP progress
-[##################--] 90%
+[####################] 100%
 ```
 
 ```mermaid
@@ -83,26 +82,24 @@ flowchart LR
     P2 --> P3["Phase 3<br/>Persistence<br/>13/13 SP<br/>100%"]
     P3 --> P4["Phase 4<br/>Briefing + dashboard<br/>13/13 SP<br/>100%"]
     P4 --> P5["Phase 5<br/>Learning loop<br/>13/13 SP<br/>100%"]
-    P5 --> P6["Phase 6<br/>Source-agnostic acquisition<br/>23/34 SP<br/>68%"]
+    P5 --> P6["Phase 6<br/>Source-agnostic acquisition<br/>34/34 SP<br/>100%"]
 
     classDef done fill:#d1fae5,stroke:#047857,color:#064e3b;
     classDef active fill:#fef3c7,stroke:#d97706,color:#78350f;
     classDef todo fill:#e5e7eb,stroke:#6b7280,color:#111827;
-    class P0,P1,P2,P3,P4,P5 done;
-    class P6 active;
+    class P0,P1,P2,P3,P4,P5,P6 done;
 ```
 
 ## Next Useful Work
 
-1. Add Hacker News and Lobsters adapters as non-Reddit proof points.
-2. Add source-level health reporting and backoff for failed feeds.
-3. Decide whether the compatibility storage table should be renamed from Reddit item to source item
-   before more adapters are added.
-4. Keep the approved Reddit API smoke test queued for when credentials arrive.
-5. Visually verify the Streamlit dashboard with the dry-run database.
+1. Keep the approved Reddit API smoke test queued for when credentials arrive.
+2. Visually verify the Streamlit dashboard with the dry-run database.
+3. Decide whether to rename the compatibility storage table from Reddit item to source item before
+   the next version.
+4. Add GitHub Discussions only if source quality from RSS, Hacker News, and Lobsters is not enough.
 
 ## Recommended Next Step
 
-Add Hacker News and Lobsters adapters next. This is the best move because it proves the
-source-agnostic design with non-Reddit sources before spending more effort on Reddit-specific
-fallbacks.
+Visually verify the Streamlit dashboard with the dry-run database next. Phase 6 is complete for the
+local MVP, and dashboard verification is the highest-value remaining confidence check before using
+the daily queue routinely.

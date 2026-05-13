@@ -2,8 +2,10 @@
 
 Last updated: 2026-05-13
 
-Status: ADR 0007 accepted. The first implementation slice now includes a source registry, canonical
-source item model, generic RSS adapter, and RSS command-line collection path.
+Status: Phase 6 complete except for live Reddit API verification, which requires approved Reddit
+credentials. The implementation includes a source registry, canonical source item model, generic
+RSS adapter, Hacker News adapter, Lobsters adapter, source health/backoff, and a Reddit RSS/API
+shadow-run path.
 
 ## Research Summary
 
@@ -114,12 +116,21 @@ Adapter implementation status:
 - `manual_import`: available indirectly through fixtures and missed-opportunity intake; dedicated
   adapter pending.
 - `rss_feed`: implemented for generic RSS ingestion with normalized source items.
-- `hacker_news_api`: pending.
+- `hacker_news_api`: implemented for official Hacker News list endpoints such as `jobstories` and
+  `askstories`.
+- `lobsters_rss`: implemented for Lobsters tag RSS feeds.
 - `github_discussions_api`: pending.
 - `reddit_api_praw`: adapter boundary exists; live verification waits for credentials and approval.
 - `reddit_json_endpoint`: keep disabled or `needs_review` unless a later policy decision approves
    it. It may be technically convenient, but it should not become a quiet workaround for missing
    API approval.
+
+## Source Health and Backoff
+
+Each source run records source health in SQLite. Successful runs mark the source healthy. Runtime
+collection failures mark the source degraded, record the last error, increment a failure count, and
+set a temporary backoff window. Later runs skip sources that are still inside their backoff window,
+so one broken feed does not stop the rest of the daily queue.
 
 ## Reddit API Switch Plan
 
@@ -146,9 +157,17 @@ No classifier or scorer changes should be required for the switch.
 - Keep source links visible for manual review.
 - Disable any source when its access policy becomes unclear.
 
-## Proposed Implementation Slices
+## Completed Phase 6 Implementation
 
-1. Add Hacker News and Lobsters adapters as non-Reddit proof points.
-2. Persist source definitions and source health state if manual configuration becomes cumbersome.
-3. Add source-level health reporting and failure backoff.
-4. Add a shadow-run path for switching Reddit RSS to Reddit API later.
+Phase 6 now covers:
+
+1. Source definitions and a canonical source item model.
+2. Generic RSS ingestion.
+3. Hacker News official API ingestion.
+4. Lobsters RSS ingestion.
+5. Source health reporting and temporary failure backoff.
+6. A Reddit RSS/API shadow-run comparison path for the future credentialed switch.
+7. Quality-gated tests covering the adapters, runner, store, and source-health behavior.
+
+Live Reddit API verification remains queued until `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` are
+configured after API approval.

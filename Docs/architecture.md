@@ -39,7 +39,8 @@ The accepted MVP is a local-first Python modular monolith:
 - A local scheduled or manually run acquisition pipeline.
 - Source definitions that separate what to monitor from how to acquire it.
 - Swappable acquisition adapters for Reddit RSS, Reddit API, generic RSS, Hacker News, Lobsters,
-  GitHub Discussions, and manual imports.
+  GitHub Discussions, and manual imports. Generic RSS, Hacker News, and Lobsters are implemented;
+  GitHub Discussions remains a later adapter.
 - SQLite as the first database.
 - SQLModel for structured persistence.
 - Deterministic classification and scoring first, with optional LLM support later.
@@ -109,7 +110,7 @@ skinparam componentStyle rectangle
 package "src/reddit_radar" {
   component "config.py\nSettings" as Config
   component "sources.py\nSource Registry" as Sources
-  component "adapters/\nRSS + future adapters" as Adapters
+  component "adapters/\nRSS, HN, Lobsters" as Adapters
   component "collector.py\nDryRunCollector + RedditCollector" as Collector
   component "normalizer.py\nSource Normalizer\nfuture module" as Normalizer
   component "pipeline.py\nRadarPipeline" as Pipeline
@@ -193,7 +194,7 @@ Recommended additions for the MVP:
 - `SourceDefinition`: configured source, acquisition method, limits, and policy state.
 - `SourceItem`: normalized item shared by Reddit, RSS, Hacker News, Lobsters, GitHub, and manual
   imports.
-- `SourceCursor`: source-level cursor, last fetch timestamp, failure count, and backoff state.
+- `SourceHealth`: source-level status, last error, failure count, and temporary backoff state.
 - `HumanDecision`: decision labels such as ignored, saved, replied, applied, follow-up, converted, rejected, false positive, false negative.
 - `RiskFlag`: normalized risk evidence instead of storing only text.
 - `ScoreBreakdown`: structured scoring factors and weights.
@@ -233,6 +234,7 @@ Recommended first source methods:
 - `manual_import`: always available for misses, examples, and curated leads.
 - `rss_feed`: generic RSS for Reddit RSS, Lobsters, newsletters, blogs, and alert feeds.
 - `hacker_news_api`: official Hacker News API for jobs, Ask HN, Show HN, and relevant stories.
+- `lobsters_rss`: Lobsters tag RSS feeds.
 - `github_discussions_api`: selected repositories and categories through GitHub GraphQL.
 - `reddit_api_praw`: official Reddit API path after approval and credentials.
 
@@ -243,6 +245,10 @@ missing Reddit API approval.
 When Reddit API credentials arrive, the switch should happen by changing source definitions from an
 RSS adapter to the PRAW adapter, then running both in a small shadow test. The classifier, scorer,
 store, dashboard, briefing, and learning loop should not need to change.
+
+Source runs record health in SQLite. Failing sources are marked degraded and temporarily backed off
+while other sources continue. This gives the daily run a safe failure mode for rate limits,
+permission errors, and broken feeds.
 
 ### Missed Opportunity Review
 

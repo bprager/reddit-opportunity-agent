@@ -12,7 +12,7 @@ Version 0.2.0 release candidate. Early local MVP.
 - Python package exists under `src/reddit_radar/`.
 - Rules-first classification, scoring, persistence, briefings, dashboard sections, and learning reports have initial tests.
 - Dry-run collection and a bounded Reddit API smoke-test command exist.
-- Source-agnostic acquisition has started: a source registry, canonical source item model, generic RSS adapter, and RSS command path exist.
+- Source-agnostic acquisition is implemented for generic RSS, Hacker News, and Lobsters, with source health/backoff and a Reddit RSS/API shadow-run path.
 - Commits are protected by Python linting, Markdown linting, and 96% minimum Python test coverage.
 - No outreach automation exists, by design.
 
@@ -77,6 +77,15 @@ Run a bounded RSS source collection:
 ```sh
 PYTHONPATH=src python -m reddit_radar.runner \
   --rss-source example=https://example.com/feed.xml \
+  --limit 10
+```
+
+Run public-source collection across implemented non-Reddit adapters:
+
+```sh
+PYTHONPATH=src python -m reddit_radar.runner \
+  --hn-source hn-jobs=jobstories \
+  --lobsters-source lobsters-jobs=job,python \
   --limit 10
 ```
 

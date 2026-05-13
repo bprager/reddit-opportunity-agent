@@ -2,7 +2,7 @@ import json
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -90,6 +90,17 @@ class OpportunityStore:
                     after TEXT NOT NULL,
                     expected_effect TEXT NOT NULL,
                     created_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS source_health (
+                    source_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    failure_count INTEGER NOT NULL,
+                    last_success_at TEXT NOT NULL,
+                    last_failure_at TEXT NOT NULL,
+                    disabled_until TEXT NOT NULL,
+                    last_error TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
                 );
                 """
             )
@@ -330,6 +341,93 @@ class OpportunityStore:
 
     def list_learning_events(self, limit: int = 20) -> list[dict]:
         return self._list_table("learning_events", limit)
+
+    def record_source_success(self, source_id: str) -> None:
+        now = self._now()
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO source_health (
+                    source_id,
+                    status,
+                    failure_count,
+                    last_success_at,
+                    last_failure_at,
+                    disabled_until,
+                    last_error,
+                    updated_at
+                )
+                VALUES (?, 'healthy', 0, ?, '', '', '', ?)
+                ON CONFLICT(source_id) DO UPDATE SET
+                    status = 'healthy',
+                    failure_count = 0,
+                    last_success_at = excluded.last_success_at,
+                    disabled_until = '',
+                    last_error = '',
+                    updated_at = excluded.updated_at
+                """,
+                (source_id, now, now),
+            )
+
+    def record_source_failure(
+        self,
+        source_id: str,
+        error: str,
+        backoff_minutes: int = 15,
+    ) -> None:
+        now = datetime.now(timezone.utc)
+        disabled_until = (now + timedelta(minutes=backoff_minutes)).isoformat()
+        now_text = now.isoformat()
+        with self._connect() as connection:
+            existing = connection.execute(
+                "SELECT failure_count FROM source_health WHERE source_id = ?",
+                (source_id,),
+            ).fetchone()
+            failure_count = 1 if existing is None else int(existing["failure_count"]) + 1
+            connection.execute(
+                """
+                INSERT INTO source_health (
+                    source_id,
+                    status,
+                    failure_count,
+                    last_success_at,
+                    last_failure_at,
+                    disabled_until,
+                    last_error,
+                    updated_at
+                )
+                VALUES (?, 'degraded', ?, '', ?, ?, ?, ?)
+                ON CONFLICT(source_id) DO UPDATE SET
+                    status = 'degraded',
+                    failure_count = excluded.failure_count,
+                    last_failure_at = excluded.last_failure_at,
+                    disabled_until = excluded.disabled_until,
+                    last_error = excluded.last_error,
+                    updated_at = excluded.updated_at
+                """,
+                (
+                    source_id,
+                    failure_count,
+                    now_text,
+                    disabled_until,
+                    error,
+                    now_text,
+                ),
+            )
+
+    def list_source_health(self) -> dict[str, dict]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM source_health ORDER BY source_id ASC"
+            ).fetchall()
+        return {row["source_id"]: dict(row) for row in rows}
+
+    def source_is_backed_off(self, source_id: str) -> bool:
+        health = self.list_source_health().get(source_id)
+        if not health or not health["disabled_until"]:
+            return False
+        disabled_until = datetime.fromisoformat(health["disabled_until"])
+        return disabled_until > datetime.now(timezone.utc)
 
     def _assessment_from_row(self, row: sqlite3.Row) -> dict:
         return {

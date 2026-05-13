@@ -60,7 +60,7 @@ class RssFeedAdapter:
     def _fetch_url(self, url: str) -> str:
         request = Request(
             url,
-            headers={"User-Agent": "reddit-opportunity-radar/0.1 read-only RSS"},
+            headers={"User-Agent": "reddit-opportunity-radar/0.2 read-only RSS"},
         )
         with urlopen(request, timeout=20) as response:
             return response.read().decode("utf-8")

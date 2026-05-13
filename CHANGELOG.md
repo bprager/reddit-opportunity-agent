@@ -10,7 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes yet.
+### Added
+
+- Added Hacker News and Lobsters adapters as non-Reddit source-agnostic proof points.
+- Added source health tracking with temporary backoff for failed sources.
+- Added a Reddit RSS/API shadow-run comparison path for a future credentialed API switch.
+
+### Changed
+
+- Marked Phase 6 complete for the local MVP and moved credential-only Reddit API verification to
+  follow-up work.
 
 ## [0.2.0] - 2026-05-13
 

@@ -59,8 +59,8 @@ Status: complete.
 
 ## Phase 6: Source-Agnostic Acquisition and Operational Hardening - 34 SP
 
-Status: in progress. Dry-run operations, a PRAW boundary, a bounded live command, the source
-registry, canonical source item model, generic RSS adapter, and quality gate exist.
+Status: complete for the local MVP. Live Reddit API verification remains queued until credentials
+are configured.
 
 - Add a dry-run collection path that can process fixture Reddit items.
 - Add source definitions that separate what to monitor from how to acquire it.
@@ -78,3 +78,10 @@ registry, canonical source item model, generic RSS adapter, and quality gate exi
 - Add a shadow-run path for switching Reddit RSS sources to Reddit API sources.
 - Prepare future FastAPI and OpenClaw integration boundaries.
 - Keep the pre-commit lint and 96% coverage gate green as adapters are added.
+
+## Post-MVP Follow-Up
+
+- Visually verify the Streamlit dashboard with a dry-run database.
+- Run the approved Reddit API smoke test after credentials are configured.
+- Consider renaming the compatibility storage table from Reddit item to source item.
+- Add GitHub Discussions if the current source mix does not produce enough quality leads.

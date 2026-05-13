@@ -159,7 +159,7 @@ class RssFeedAdapterTests(unittest.TestCase):
             )
 
         self.assertEqual(
-            {"sources": 1, "collected": 1, "saved": 1, "open": 1},
+            {"sources": 1, "collected": 1, "saved": 1, "open": 1, "failed": 0, "skipped": 0},
             result,
         )
 
