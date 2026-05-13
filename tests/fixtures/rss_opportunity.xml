@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Example opportunities</title>
+    <item>
+      <guid>rss-remote-ai</guid>
+      <title>[Hiring] Build an internal AI workflow</title>
+      <link>https://example.com/items/rss-remote-ai</link>
+      <description>Need help building an AI workflow. Budget is 5000 USD. Remote is fine.</description>
+      <author>example_author</author>
+      <pubDate>Wed, 13 May 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

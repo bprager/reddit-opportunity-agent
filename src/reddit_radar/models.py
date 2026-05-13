@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 
 from sqlmodel import Field, SQLModel
@@ -17,7 +17,7 @@ class RedditItem(SQLModel, table=True):
     author: str | None = None
     url: str
     created_utc: datetime
-    collected_at: datetime = Field(default_factory=datetime.utcnow)
+    collected_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class OpportunityAssessment(SQLModel, table=True):
@@ -30,7 +30,7 @@ class OpportunityAssessment(SQLModel, table=True):
     risks: str = ""
     recommended_action: str
     draft_reply: str = ""
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class MissedReason(StrEnum):
@@ -50,7 +50,7 @@ class MissedOpportunity(SQLModel, table=True):
     title: str
     notes: str = ""
     missed_reason: MissedReason
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class SourceCandidate(SQLModel, table=True):
@@ -60,7 +60,7 @@ class SourceCandidate(SQLModel, table=True):
     reason: str
     expected_signal: str = ""
     status: str = "candidate"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class LearningEvent(SQLModel, table=True):
@@ -70,4 +70,4 @@ class LearningEvent(SQLModel, table=True):
     before: str = ""
     after: str = ""
     expected_effect: str = ""
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

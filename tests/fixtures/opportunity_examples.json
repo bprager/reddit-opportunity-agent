@@ -1,0 +1,127 @@
+[
+  {
+    "id": "strong_remote_ai_automation",
+    "source": "r/forhire",
+    "title": "[Hiring] Build an internal AI workflow for support triage",
+    "body": "We have a small support team and need help building an AI-assisted workflow that summarizes tickets, routes them by topic, and drafts internal notes. Budget is 8000-12000 USD. Remote is fine. Looking for someone who can map the workflow before implementation.",
+    "expected": {
+      "category": "remote_opportunity",
+      "score_band": {
+        "min": 80,
+        "max": 95
+      },
+      "risk_flags": [],
+      "recommended_action": "Review and prepare a focused application note with one workflow-mapping question.",
+      "why": "Clear paid remote work, strong AI automation fit, visible budget, and a practical discovery-first scope."
+    }
+  },
+  {
+    "id": "strong_local_la_business",
+    "source": "r/LosAngeles",
+    "title": "Local shop needs help replacing spreadsheet scheduling",
+    "body": "I run a small service business in Los Angeles and our scheduling is still handled through shared spreadsheets. We keep double-booking appointments and want to understand whether a lightweight internal tool or automation would solve this.",
+    "expected": {
+      "category": "local_client_lead",
+      "score_band": {
+        "min": 70,
+        "max": 90
+      },
+      "risk_flags": [],
+      "recommended_action": "Save for review and draft a public reply with one diagnostic scheduling question.",
+      "why": "Local business pain is specific, operational, and well matched to workflow automation and advisory help."
+    }
+  },
+  {
+    "id": "scam_risk_reject",
+    "source": "r/hireaprogrammer",
+    "title": "Need AI crypto app today, huge upside",
+    "body": "Build a crypto trading AI today. No cash now but equity will be huge. Must do a free architecture first. Contact only on Telegram or WhatsApp. This is urgent and will explode soon.",
+    "expected": {
+      "category": "reject",
+      "score_band": {
+        "min": 0,
+        "max": 20
+      },
+      "risk_flags": [
+        "equity_only",
+        "suspicious_urgency",
+        "free_work",
+        "crypto_heavy",
+        "telegram_only",
+        "whatsapp_only"
+      ],
+      "recommended_action": "Reject without drafting outreach.",
+      "why": "Multiple hard-risk signals outweigh any possible technical fit."
+    }
+  },
+  {
+    "id": "weak_no_budget_lead",
+    "source": "r/startups",
+    "title": "Looking for someone to build my SaaS idea",
+    "body": "I have an idea for a SaaS product and need a developer to build the whole thing. I cannot share much yet and do not have a budget posted. Maybe we can talk if you are interested.",
+    "expected": {
+      "category": "reject",
+      "score_band": {
+        "min": 10,
+        "max": 35
+      },
+      "risk_flags": [
+        "no_budget"
+      ],
+      "recommended_action": "Reject or keep only as a low-priority market signal.",
+      "why": "The post lacks budget, scope, decision criteria, and evidence of seriousness."
+    }
+  },
+  {
+    "id": "false_positive_learning",
+    "source": "r/smallbusiness",
+    "title": "What AI tools do you use for invoices?",
+    "body": "I am curious what tools other owners use. I am not hiring and just want recommendations for software I can try myself.",
+    "expected": {
+      "category": "ignore",
+      "score_band": {
+        "min": 0,
+        "max": 25
+      },
+      "risk_flags": [],
+      "recommended_action": "Ignore as an opportunity, but optionally save as a market signal.",
+      "why": "The post contains a relevant topic but no buying intent, hiring intent, or request for help."
+    }
+  },
+  {
+    "id": "missed_opportunity_learning",
+    "source": "r/SaaS",
+    "title": "Need advice on reducing manual onboarding work",
+    "body": "Our B2B SaaS has grown enough that onboarding now takes too much founder time. We are not sure whether to automate, hire ops help, or redesign the onboarding flow. We can pay for the right advisory help if the first conversation is useful.",
+    "expected": {
+      "category": "missed_opportunity",
+      "score_band": {
+        "min": 65,
+        "max": 85
+      },
+      "risk_flags": [],
+      "recommended_action": "Add as a missed-opportunity regression example and tune rules to catch advisory buying signals.",
+      "why": "The language is advisory rather than direct hiring, but the business pain and willingness to pay make it a valuable lead."
+    }
+  },
+  {
+    "id": "low_rate_distraction",
+    "source": "r/FreelanceProgramming",
+    "title": "Need senior AI engineer for 10 dollars per hour",
+    "body": "I need a senior developer to build an AI automation platform. Rate is 10 USD per hour. Must be available immediately and do trial tasks before payment.",
+    "expected": {
+      "category": "reject",
+      "score_band": {
+        "min": 0,
+        "max": 20
+      },
+      "risk_flags": [
+        "low_rate",
+        "free_work",
+        "suspicious_urgency"
+      ],
+      "recommended_action": "Reject as underpriced and risky.",
+      "why": "The rate and trial-work request make the opportunity uneconomic even though the topic fits."
+    }
+  }
+]
