@@ -56,6 +56,10 @@ cp .env.example .env
 make check
 ```
 
+Commits run the same quality gate through `.githooks/pre-commit`. Run `uv sync --extra dev` once
+to install the development tools; each commit must pass Python linting, Markdown linting, and at
+least 96% Python test coverage.
+
 Generate a placeholder daily briefing and Codex handoff:
 
 ```sh
