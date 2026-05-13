@@ -2,7 +2,9 @@
 
 ## Product Shape
 
-Reddit Opportunity Radar is a daily intelligence tool for finding and ranking business opportunities from Reddit. It is not an outreach bot.
+Reddit Opportunity Radar is a daily intelligence tool for finding and ranking business opportunities
+from public communities and feeds. Reddit is the first source family, but the product should not
+depend on one Reddit acquisition method. It is not an outreach bot.
 
 The experience should feel like a practical analyst desk:
 
@@ -14,15 +16,17 @@ The experience should feel like a practical analyst desk:
 
 ## Core Workflow
 
-1. Collect configured Reddit posts and comments.
-2. Store raw source items.
-3. Classify each item.
-4. Score opportunity fit and economic value.
-5. Detect risk and low-quality signals.
-6. Generate a recommended action and optional draft.
-7. Present a daily dashboard and briefing.
-8. Record Bernd's decision.
-9. Convert outcomes and misses into learning events.
+1. Load configured sources.
+2. Acquire items through the source's configured adapter.
+3. Normalize each item into a canonical source item.
+4. Store and deduplicate source items.
+5. Classify each item.
+6. Score opportunity fit and economic value.
+7. Detect risk and low-quality signals.
+8. Generate a recommended action and optional draft.
+9. Present a daily dashboard and briefing.
+10. Record Bernd's decision.
+11. Convert outcomes and misses into learning events.
 
 ## Main Screens
 
@@ -43,4 +47,4 @@ Generated recommendations should be direct, specific, and cautious. Draft replie
 - Show rejection reasons clearly.
 - Make human approval explicit near any draft reply.
 - Keep source links visible for manual review.
-
+- Keep acquisition method visible enough to diagnose source quality and policy failures.

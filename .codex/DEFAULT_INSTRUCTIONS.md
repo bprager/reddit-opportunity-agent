@@ -25,7 +25,7 @@ Read these files before meaningful project work:
 Use the strongest practical check for the change:
 
 - Documentation-only changes: inspect generated files and run a Markdown sanity check when available.
-- Python changes: run `make check`.
+- Python changes: run `make check`, which includes linting and the 96% coverage gate.
 - Behavior changes: add or update tests before changing the implementation.
 - Dashboard changes: run and view the dashboard when practical.
 
@@ -33,7 +33,8 @@ Use the strongest practical check for the change:
 
 Final reports to Bernd should be plain, clear English. Avoid unnecessary implementation detail and avoid assuming he has the code open.
 
+After finishing a step or task, include an educated recommendation for the next best step.
+
 ## Preference Memory
 
 At the start of substantial work, retrieve global and project preferences through the persist-preferences skill. If Bernd states a durable project preference, save it and sync the local preference mirror before finishing.
-

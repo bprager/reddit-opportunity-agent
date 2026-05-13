@@ -2,7 +2,7 @@
 
 Date: 2026-05-11
 
-Status: Proposed
+Status: Accepted
 
 ## Context
 
@@ -17,5 +17,4 @@ Use SQLite for the MVP, accessed through SQLModel. Move to Postgres when hosted 
 - Local setup stays lightweight.
 - Early schema work can happen without infrastructure overhead.
 - Migration discipline is still needed if the data model changes.
-- Bernd should confirm the threshold for moving to Postgres.
-
+- Postgres remains a later migration when hosted deployment, concurrent workers, or multi-user access requires it.

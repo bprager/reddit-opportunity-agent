@@ -2,7 +2,7 @@
 
 Date: 2026-05-11
 
-Status: Proposed
+Status: Accepted
 
 ## Context
 
@@ -21,12 +21,11 @@ Start the MVP as a Python modular monolith with clear internal module boundaries
 - Dashboard and reports.
 - Learning loop.
 
-FastAPI and OpenClaw tools should be added after the daily review queue and learning loop prove useful.
+FastAPI and OpenClaw tools will be added after the daily review queue and learning loop prove useful.
 
 ## Consequences
 
 - The first version stays simple to run locally.
 - Module boundaries remain ready for later API extraction.
 - The project avoids premature service splitting.
-- Bernd should confirm whether local-first is acceptable before implementation proceeds.
-
+- Local-first development is now the accepted MVP direction.

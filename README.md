@@ -1,17 +1,19 @@
 # Reddit Opportunity Radar
 
-Research assistant for finding high-signal Reddit opportunities without automating outreach.
+Research assistant for finding high-signal public-source opportunities without automating outreach.
 
-The project monitors selected Reddit communities, classifies posts, scores fit and risk, and produces a daily review queue for Bernd to decide what is worth pursuing.
+The project monitors selected communities and feeds, classifies posts, scores fit and risk, and produces a daily review queue for Bernd to decide what is worth pursuing. Reddit remains the first source family, but ingestion is being redesigned so RSS, Hacker News, Lobsters, GitHub Discussions, manual feeds, and the official Reddit API can plug into the same pipeline.
 
 ## Status
 
-Early MVP scaffold.
+Version 0.2.0 release candidate. Early local MVP.
 
 - Product direction and architecture are documented.
-- Python package skeleton exists under `src/reddit_radar/`.
-- Data models exist for Reddit items, assessments, missed opportunities, source candidates, and learning events.
-- Collector, classifier, scorer, briefing, and dashboard are still mostly placeholders.
+- Python package exists under `src/reddit_radar/`.
+- Rules-first classification, scoring, persistence, briefings, dashboard sections, and learning reports have initial tests.
+- Dry-run collection and a bounded Reddit API smoke-test command exist.
+- Source-agnostic acquisition has started: a source registry, canonical source item model, generic RSS adapter, and RSS command path exist.
+- Commits are protected by Python linting, Markdown linting, and 96% minimum Python test coverage.
 - No outreach automation exists, by design.
 
 ## What It Does
@@ -37,7 +39,9 @@ Human approval is required before any external reply, application, or follow-up.
 The recommended MVP is a local-first Python modular monolith:
 
 - Python 3.12+
-- Reddit API access through PRAW or direct OAuth API calls
+- Source registry plus swappable acquisition adapters
+- Generic RSS and public-source adapters while Reddit API approval is pending
+- Reddit API access through PRAW when credentials are issued
 - SQLite for the first local database
 - SQLModel and Pydantic for structured data
 - Rules-first classification and scoring, with optional LLM support later
@@ -60,13 +64,21 @@ Commits run the same quality gate through `.githooks/pre-commit`. Run `uv sync -
 to install the development tools; each commit must pass Python linting, Markdown linting, and at
 least 96% Python test coverage.
 
-Generate a placeholder daily briefing and Codex handoff:
+Generate a daily briefing and Codex handoff:
 
 ```sh
 make codex-context
 ```
 
 Generated reports are written under `reports/`.
+
+Run a bounded RSS source collection:
+
+```sh
+PYTHONPATH=src python -m reddit_radar.runner \
+  --rss-source example=https://example.com/feed.xml \
+  --limit 10
+```
 
 ## Repository Map
 
@@ -75,6 +87,7 @@ Generated reports are written under `reports/`.
 |-- src/reddit_radar/        # Python package skeleton
 |-- Docs/                    # Product, architecture, and review docs
 |-- Docs/adr/                # Architecture decision records
+|-- Docs/source_acquisition.md # Source acquisition design
 |-- .codex/                  # Codex project memory and working context
 |-- CHANGELOG.md             # Project change history
 |-- TODO.md                  # Current work queue
@@ -86,11 +99,12 @@ Generated reports are written under `reports/`.
 
 The first useful version should answer:
 
-> What are the 20 best Reddit opportunities today, why are they worth looking at, and what should Bernd do next?
+> What are the 20 best public-source opportunities today, why are they worth looking at, and what should Bernd do next?
 
 ## Key Docs
 
 - [Architecture](Docs/architecture.md)
+- [Source acquisition design](Docs/source_acquisition.md)
 - [Adaptive learning design](Docs/adaptive_learning.md)
 - [ChatGPT and Codex review workflow](Docs/chatgpt_codex_review.md)
 - [Architecture decisions](Docs/adr/README.md)

@@ -10,8 +10,18 @@
 
 - Respect subreddit rules and Reddit platform limits.
 - Avoid aggressive scraping.
-- Prefer official API access through configured credentials.
+- Prefer official API access through configured credentials when approval is available.
+- Treat Reddit RSS as a low-volume interim source, not as an unrestricted scraping channel.
+- Keep Reddit JSON endpoints disabled or `needs_review` unless a later policy decision approves
+  them.
 - Keep source attribution and URLs with collected items.
+
+## Source Acquisition Policy
+
+- Use source-specific adapters with explicit limits and failure states.
+- Disable sources after repeated permission, policy, or rate-limit failures.
+- Store the acquisition method for auditability.
+- Do not bypass access controls, paywalls, private communities, or platform rules.
 
 ## Data Policy
 
@@ -33,4 +43,3 @@
 - Important architecture decisions get an ADR under `Docs/adr/`.
 - Workflow and context changes update `.codex/`.
 - Notable changes update `CHANGELOG.md`.
-

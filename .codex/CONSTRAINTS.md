@@ -17,6 +17,9 @@
 - Use SQLite for early local development unless a later ADR changes this.
 - Keep Pydantic and SQLModel as the first structured data layer.
 - Keep Streamlit as the first dashboard unless a later ADR changes this.
+- Keep source acquisition separate from classification, scoring, dashboard, briefing, and learning.
+- Treat Reddit API, Reddit RSS, Hacker News, Lobsters, GitHub Discussions, and manual imports as
+  adapters that produce the same canonical source item shape.
 - Support future FastAPI and OpenClaw integration without requiring them for the MVP.
 
 ## Workflow Constraints
@@ -25,4 +28,3 @@
 - Important decisions require an ADR in `Docs/adr/`.
 - Scoring and prompt changes should be versioned or recorded as learning events.
 - Prefer representative tests for classification, scoring, and risk rules.
-
